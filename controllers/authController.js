@@ -191,7 +191,7 @@ exports.comment = async (req, res) => {
     try {
         const user_id = req.user.id;
 
-        await db.query('INSERT INTO omments (post_id, user_id, comment,comment_at) VALUES (?, ?, ?, ?, ?)', [post_id, user_id, comment, comment_at]);
+        await db.query('INSERT INTO comments (post_id, user_id, comment,comment_at) VALUES (?, ?, ?, ?, ?)', [post_id, user_id, comment, comment_at]);
         res.status(201).json({ message: 'Comment added successfully' });
 
     } catch (err) {
