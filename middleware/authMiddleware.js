@@ -9,6 +9,7 @@ const verifyToken = (req, res, next) => {
         req.user = decoded;
         next();
     } catch (err) {
+        
         res.status(400).json({ status: 400, message: 'Invalid token.' });
     }
 };

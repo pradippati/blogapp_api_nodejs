@@ -180,3 +180,30 @@ exports.like = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error' });
     }
 };
+///////////////////commnet////////////////////////////////////////////////////////////
+exports.comment = async (req, res) => {
+    const { post_id, status } = req.body;
+    if (!post_id || status === undefined) {
+        return res.status(400).json({ message: 'Please provide post_id and status' });
+    }
+
+    try {
+        const user_id = req.user.id;
+
+        // Check if the like already exists
+        const [existingLike] = await db.query('SELECT * FROM likes WHERE post_id = ? AND user_id = ?', [post_id, user_id]);
+
+        if (existingLike.length > 0) {
+            // If the like exists, update the status
+            await db.query('UPDATE likes SET status = ? WHERE post_id = ? AND user_id = ?', [status, post_id, user_id]);
+            res.status(200).json({ message: 'Like status updated successfully' });
+        } else {
+            // If the like does not exist, insert a new like
+            await db.query('INSERT INTO likes (post_id, user_id, status) VALUES (?, ?, ?)', [post_id, user_id, status]);
+            res.status(201).json({ message: 'Like added successfully' });
+        }
+    } catch (err) {
+        console.error('Server error', err);
+        res.status(500).json({ status: 500, message: 'Server error' });
+    }
+};
