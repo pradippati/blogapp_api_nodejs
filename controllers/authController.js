@@ -82,23 +82,24 @@ exports.user = async (req, res) => {
 };
 //create
 exports.create = async (req, res) => {
-    const { title, des } = req.body;
+    const { title, des, cat } = req.body;
     if (!title || !des) {
         return res.status(400).json({ message: 'Please provide title, description' });
     }
 
     try {
         const user_id = req.user.id;
-        await db.query('INSERT INTO posts (title,description,created_by) VALUES (?, ?, ?)', [
+        await db.query('INSERT INTO posts (title,description,category,created_by) VALUES (?, ?, ?,?)', [
             title,
             des,
+            cat,
             user_id,
         ]);
 
         res.status(201).json({ message: 'New post Created successfully' });
     } catch (err) {
         console.error('Server error', err);
-        res.status(500).json({ status: 500, message: 'Server error' });
+        res.status(500).json({ status: 500, message: err });
     }
 };
 exports.getpost = async (req, res) => {
@@ -110,7 +111,8 @@ exports.getpost = async (req, res) => {
         SELECT 
         posts.id AS post_id, 
         posts.title, 
-        posts.description, 
+        posts.description,
+        posts.category,  
         users.name AS created_by,
         COALESCE(likes.status, 0) AS like_status,
         (SELECT COUNT(*) FROM likes WHERE likes.post_id = posts.id) AS total_likes
@@ -191,11 +193,11 @@ exports.comment = async (req, res) => {
     try {
         const user_id = req.user.id;
 
-        await db.query('INSERT INTO comments (post_id, user_id, comment,comment_at) VALUES (?, ?, ?, ?, ?)', [post_id, user_id, comment, comment_at]);
+        await db.query('INSERT INTO comments (post_id, user_id,comment_id, comment,comment_at) VALUES (?, ?,?, ?, ?)', [post_id, user_id, type, comment, comment_at]);
         res.status(201).json({ message: 'Comment added successfully' });
 
     } catch (err) {
         console.error('Server error', err);
-        res.status(500).json({ status: 500, message: 'Server error' });
+        res.status(500).json({ status: 500, message: err });
     }
 };
