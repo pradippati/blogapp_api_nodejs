@@ -134,7 +134,19 @@ exports.getpost = async (req, res) => {
         res.status(500).json({ status: 500, message: 'Server error' });
     }
 };
+//////////////////////////delete post//////////////////////////////////////////////////////////////
+exports.deletepost = async (req, res, id) => {
 
+    const postId = req.params.id;
+
+    try {
+        await db.query('DELETE FROM posts WHERE id = ?', [postId]);
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        res.status(400).json({ status: 400, message: 'Invalid token.' });
+    }
+};
 ////////////////////logoutuser api
 exports.logoutuser = (req, res) => {
     const token = req.header('Authorization')?.split(' ')[1];
