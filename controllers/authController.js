@@ -102,6 +102,28 @@ exports.create = async (req, res) => {
         res.status(500).json({ status: 500, message: err });
     }
 };
+exports.update = async (req, res) => {
+    const { title, des, cat, post_id } = req.body;
+    if (!title || !des || !post_id) {
+        return res.status(400).json({ message: 'Please provide title, description' });
+    }
+
+    try {
+        const user_id = req.user.id;
+
+        await db.query('UPDATE posts SET title = ?, description = ?, category = ? WHERE id = ?', [
+            title,
+            des,
+            cat,
+            post_id,
+        ]);
+
+        res.status(201).json({ message: ' post Updated successfully' });
+    } catch (err) {
+        console.error('Server error', err);
+        res.status(500).json({ status: 500, message: err });
+    }
+};
 exports.getpost = async (req, res) => {
     const { title, des } = req.body;
     try {
